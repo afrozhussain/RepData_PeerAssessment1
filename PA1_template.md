@@ -143,3 +143,44 @@ paste('Median : ' , round(median(data2_daily_steps))   )
 ```
 
 There is no difference in **mean** value but **median**  increased.
+
+Are there differences in activity patterns between weekdays and weekends?
+==========================================================================
+
+1.Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+
+```r
+fill_in_NAs <- data2
+
+weekend_log <- grepl("^[Ss]", weekdays(as.Date(fill_in_NAs$date)))
+
+for (i in (1:nrow(fill_in_NAs))) {
+    if (weekend_log[i] == TRUE) {
+        fill_in_NAs$day_of_week[i] <- "weekend"
+    } else {
+        fill_in_NAs$day_of_week[i] <- "weekday"
+    }
+}
+
+mean_stps_per_intvl_imput <- aggregate(fill_in_NAs$steps, by = list(fill_in_NAs$interval, 
+    fill_in_NAs$day_of_week), FUN = "mean", na.rm = TRUE)
+colnames(mean_stps_per_intvl_imput) <- c("interval", "weekday_weekend", "avg_steps")
+
+sort_order <- order(as.numeric(mean_stps_per_intvl_imput$interval))
+mean_stps_per_intvl_imput <- mean_stps_per_intvl_imput[sort_order, ]
+
+mean_by_day_type <- aggregate(fill_in_NAs$steps, by = list(fill_in_NAs$day_of_week), 
+    FUN = "mean", na.rm = TRUE)
+mean_weekdays <- round(mean_by_day_type[1, 2], 2)
+mean_weekends <- round(mean_by_day_type[2, 2], 2)
+
+library(lattice)
+
+xyplot(avg_steps ~ as.numeric(interval) | as.factor(weekday_weekend), data = mean_stps_per_intvl_imput, 
+    type = "l", layout = c(1, 2), col = c("blue"), main = "Average Number of Steps by Time Interval (imputing missing values)", 
+    xlab = "Five-minute time period", ylab = "Avg number of steps")
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+
