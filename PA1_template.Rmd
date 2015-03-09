@@ -62,6 +62,8 @@ sum(is.na(data$steps))
 
 2.Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5- minute interval, etc.
 
+**Strategy:**  I have used the mean steps for that 5- minute interval and imputed all NAs with that as shown below.
+
 ```{r}
 
 na_data <- data[is.na(data),]
